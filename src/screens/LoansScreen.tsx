@@ -15,6 +15,7 @@ import { loanService } from "../services/loanService";
 import { Prestamo } from "../types";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "../context/ThemeContext";
+import BackgroundWrapper from "../components/BackgroundWrapper";
 import { Colors } from "../theme/colors";
 import { useCallback } from "react";
 
@@ -126,38 +127,40 @@ export default function PrestamosScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.textPrimary }]}>Lista de Préstamos</Text>
-        <View style={[styles.headerDot, { backgroundColor: colors.success }]} />
-      </View>
+    <BackgroundWrapper>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={[styles.title, { color: colors.textPrimary }]}>Lista de Préstamos</Text>
+          <View style={[styles.headerDot, { backgroundColor: colors.success }]} />
+        </View>
 
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={[styles.searchInput, { backgroundColor: colors.bgDark, color: colors.textPrimary, borderColor: colors.border }]}
-          placeholder="Buscar por cliente..."
-          placeholderTextColor={colors.textSecondary}
-          value={search}
-          onChangeText={setSearch}
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={[styles.searchInput, { backgroundColor: colors.bgDark, color: colors.textPrimary, borderColor: colors.border }]}
+            placeholder="Buscar por cliente..."
+            placeholderTextColor={colors.textSecondary}
+            value={search}
+            onChangeText={setSearch}
+          />
+        </View>
+        
+        <FlatList
+          data={filteredLoans}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderPrestamoItem}
+          contentContainerStyle={styles.list}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.success} />
+          }
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyEmoji}>📂</Text>
+              <Text style={styles.emptyText}>No hay préstamos registrados</Text>
+            </View>
+          }
         />
-      </View>
-      
-      <FlatList
-        data={filteredLoans}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderPrestamoItem}
-        contentContainerStyle={styles.list}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.success} />
-        }
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyEmoji}>📂</Text>
-            <Text style={styles.emptyText}>No hay préstamos registrados</Text>
-          </View>
-        }
-      />
-    </SafeAreaView>
+      </SafeAreaView>
+    </BackgroundWrapper>
   );
 }
 

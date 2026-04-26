@@ -17,6 +17,7 @@ import { paymentService } from "../services/paymentService";
 import { loanService } from "../services/loanService";
 import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "../context/ThemeContext";
+import BackgroundWrapper from "../components/BackgroundWrapper";
 import { Colors } from "../theme/colors";
 import { Prestamo } from "../types";
 import { useCallback } from "react";
@@ -134,12 +135,19 @@ export default function CreatePaymentScreen() {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.flex}
-      >
+    <BackgroundWrapper>
+      <SafeAreaView style={styles.container}>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.flex}
+        >
         <View style={styles.header}>
+          <TouchableOpacity 
+            style={{ marginBottom: 15, paddingVertical: 10 }} 
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={{ color: colors.success, fontSize: 16, fontWeight: "600" }}>‹ Volver</Text>
+          </TouchableOpacity>
           <Text style={[styles.title, { color: colors.textPrimary }]}>Registrar Cobro</Text>
           {loanId ? (
             <TouchableOpacity onPress={() => setLoanId(null)} style={[styles.chip, { backgroundColor: colors.primary + "30" }]}>
@@ -216,8 +224,9 @@ export default function CreatePaymentScreen() {
             </View>
           )}
         </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </BackgroundWrapper>
   );
 }
 

@@ -2,13 +2,15 @@ import React from "react";
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity } from "react-native";
 import { useTheme } from "../context/ThemeContext";
 import { useNavigation } from "@react-navigation/native";
+import BackgroundWrapper from "../components/BackgroundWrapper";
 
 export default function HelpScreen() {
   const { colors } = useTheme();
   const navigation = useNavigation();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
+    <BackgroundWrapper>
+      <SafeAreaView style={styles.container}>
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Text style={[styles.backText, { color: colors.success }]}>‹ Volver</Text>
@@ -55,6 +57,7 @@ export default function HelpScreen() {
 
       </ScrollView>
     </SafeAreaView>
+    </BackgroundWrapper>
   );
 }
 

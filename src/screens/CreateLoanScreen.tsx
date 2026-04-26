@@ -15,6 +15,7 @@ import Toast from "react-native-toast-message";
 import { loanService } from "../services/loanService";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useTheme } from "../context/ThemeContext";
+import BackgroundWrapper from "../components/BackgroundWrapper";
 import { Colors } from "../theme/colors";
 
 export default function CreateLoanScreen() {
@@ -83,9 +84,17 @@ export default function CreateLoanScreen() {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{flex: 1}}>
+    <BackgroundWrapper>
+      <SafeAreaView style={styles.container}>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{flex: 1}}>
         <ScrollView contentContainerStyle={styles.content}>
+          <TouchableOpacity 
+            style={{ marginBottom: 20, paddingVertical: 10 }} 
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={{ color: colors.success, fontSize: 16, fontWeight: "600" }}>‹ Volver</Text>
+          </TouchableOpacity>
+
           <View style={styles.header}>
             <Text style={[styles.title, { color: colors.textPrimary }]}>Nuevo Préstamo</Text>
             <View style={[styles.chip, { backgroundColor: colors.primary + "30" }]}>
@@ -139,7 +148,8 @@ export default function CreateLoanScreen() {
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
-  );
+  </BackgroundWrapper>
+);
 }
 
 const styles = StyleSheet.create({

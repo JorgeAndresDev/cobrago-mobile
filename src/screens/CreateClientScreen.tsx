@@ -4,22 +4,25 @@ import {
   Text, 
   TextInput, 
   TouchableOpacity, 
-  StyleSheet, 
-  SafeAreaView 
+  SafeAreaView,
+  StyleSheet
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { clientService } from "../services/clientService";
 import { useNavigation } from "@react-navigation/native";
 import { useTheme } from "../context/ThemeContext";
+import BackgroundWrapper from "../components/BackgroundWrapper";
+import { createCommonStyles } from "../styles/common.styles";
 
 export default function CreateClientScreen() {
   const { colors } = useTheme();
+  const commonStyles = createCommonStyles(colors);
   const [nombre, setNombre] = useState("");
   const [cedula, setCedula] = useState("");
   const [telefono, setTelefono] = useState("");
   const [direccion, setDireccion] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
 
   const handleCreate = async () => {
     if (!nombre || !cedula) {
@@ -52,48 +55,77 @@ export default function CreateClientScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
-      <View style={styles.content}>
-        <Text style={[styles.title, { color: colors.textPrimary }]}>Nuevo Cliente</Text>
-        
-        <View style={styles.inputGroup}>
-          <Text style={[styles.label, { color: colors.textSecondary }]}>Nombre Completo</Text>
-          <TextInput style={[styles.input, { borderColor: colors.border, backgroundColor: colors.bgDark, color: colors.textPrimary }]} value={nombre} onChangeText={setNombre} placeholderTextColor={colors.textSecondary} />
-        </View>
+    <BackgroundWrapper>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.content}>
+          <TouchableOpacity 
+            style={commonStyles.backButton} 
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={commonStyles.backButtonText}>‹ Volver</Text>
+          </TouchableOpacity>
 
-        <View style={styles.inputGroup}>
-          <Text style={[styles.label, { color: colors.textSecondary }]}>Cédula / DNI</Text>
-          <TextInput style={[styles.input, { borderColor: colors.border, backgroundColor: colors.bgDark, color: colors.textPrimary }]} value={cedula} onChangeText={setCedula} placeholderTextColor={colors.textSecondary} />
-        </View>
+          <Text style={[styles.title, { color: colors.textPrimary }]}>Nuevo Cliente</Text>
+          
+          <View style={styles.inputGroup}>
+            <Text style={[styles.label, { color: colors.textSecondary }]}>Nombre Completo</Text>
+            <TextInput 
+              style={[styles.input, { borderColor: colors.border, backgroundColor: colors.bgDark, color: colors.textPrimary }]} 
+              value={nombre} 
+              onChangeText={setNombre} 
+              placeholderTextColor={colors.textSecondary} 
+            />
+          </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={[styles.label, { color: colors.textSecondary }]}>Teléfono</Text>
-          <TextInput style={[styles.input, { borderColor: colors.border, backgroundColor: colors.bgDark, color: colors.textPrimary }]} value={telefono} onChangeText={setTelefono} placeholderTextColor={colors.textSecondary} />
-        </View>
+          <View style={styles.inputGroup}>
+            <Text style={[styles.label, { color: colors.textSecondary }]}>Cédula / DNI</Text>
+            <TextInput 
+              style={[styles.input, { borderColor: colors.border, backgroundColor: colors.bgDark, color: colors.textPrimary }]} 
+              value={cedula} 
+              onChangeText={setCedula} 
+              placeholderTextColor={colors.textSecondary} 
+            />
+          </View>
 
-        <View style={styles.inputGroup}>
-          <Text style={[styles.label, { color: colors.textSecondary }]}>Dirección</Text>
-          <TextInput style={[styles.input, { borderColor: colors.border, backgroundColor: colors.bgDark, color: colors.textPrimary }]} value={direccion} onChangeText={setDireccion} placeholderTextColor={colors.textSecondary} />
-          <Text style={{ color: colors.textSecondary, fontSize: 11, marginTop: 4, marginLeft: 4 }}>
-            💡 Tip: Puedes pegar coordenadas o el nombre del negocio para mayor exactitud.
-          </Text>
-        </View>
+          <View style={styles.inputGroup}>
+            <Text style={[styles.label, { color: colors.textSecondary }]}>Teléfono</Text>
+            <TextInput 
+              style={[styles.input, { borderColor: colors.border, backgroundColor: colors.bgDark, color: colors.textPrimary }]} 
+              value={telefono} 
+              onChangeText={setTelefono} 
+              placeholderTextColor={colors.textSecondary} 
+            />
+          </View>
 
-        <TouchableOpacity 
-          style={[styles.button, { backgroundColor: colors.primary }, loading && styles.disabled]} 
-          onPress={handleCreate}
-          disabled={loading}
-        >
-          <Text style={[styles.buttonText, { color: colors.textLight }]}>{loading ? "Creando..." : "Guardar Cliente"}</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+          <View style={styles.inputGroup}>
+            <Text style={[styles.label, { color: colors.textSecondary }]}>Dirección</Text>
+            <TextInput 
+              style={[styles.input, { borderColor: colors.border, backgroundColor: colors.bgDark, color: colors.textPrimary }]} 
+              value={direccion} 
+              onChangeText={setDireccion} 
+              placeholderTextColor={colors.textSecondary} 
+            />
+            <Text style={{ color: colors.textSecondary, fontSize: 11, marginTop: 4, marginLeft: 4 }}>
+              💡 Tip: Puedes pegar coordenadas o el nombre del negocio para mayor exactitud.
+            </Text>
+          </View>
+
+          <TouchableOpacity 
+            style={[styles.button, { backgroundColor: colors.primary }, loading && styles.disabled]} 
+            onPress={handleCreate}
+            disabled={loading}
+          >
+            <Text style={[styles.buttonText, { color: colors.textLight }]}>{loading ? "Creando..." : "Guardar Cliente"}</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </BackgroundWrapper>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { padding: 24, paddingTop: 60 },
+  content: { padding: 24, paddingTop: 20 },
   title: { fontSize: 28, fontWeight: "bold", marginBottom: 30 },
   inputGroup: { marginBottom: 20 },
   label: { fontSize: 14, fontWeight: "600", marginBottom: 8, marginLeft: 4 },

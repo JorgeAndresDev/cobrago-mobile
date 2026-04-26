@@ -17,6 +17,7 @@ import { clientService } from "../services/clientService";
 import { Cliente } from "../types";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "../context/ThemeContext";
+import BackgroundWrapper from "../components/BackgroundWrapper";
 import { Colors } from "../theme/colors";
 import { useCallback } from "react";
 
@@ -135,43 +136,45 @@ export default function ClientsScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: 'transparent' }]}>
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.textPrimary }]}>Mis Clientes</Text>
-        <TouchableOpacity 
-          style={[styles.addButton, { backgroundColor: colors.primary }]}
-          onPress={() => navigation.navigate("CreateClient")}
-        >
-          <Text style={styles.addButtonText}>+ Nuevo</Text>
-        </TouchableOpacity>
-      </View>
+    <BackgroundWrapper>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <Text style={[styles.title, { color: colors.textPrimary }]}>Mis Clientes</Text>
+          <TouchableOpacity 
+            style={[styles.addButton, { backgroundColor: colors.primary }]}
+            onPress={() => navigation.navigate("CreateClient")}
+          >
+            <Text style={styles.addButtonText}>+ Nuevo</Text>
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={[styles.searchInput, { backgroundColor: colors.bgDark, color: colors.textPrimary, borderColor: colors.border }]}
-          placeholder="Buscar cliente..."
-          placeholderTextColor={colors.textSecondary}
-          value={search}
-          onChangeText={setSearch}
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={[styles.searchInput, { backgroundColor: colors.bgDark, color: colors.textPrimary, borderColor: colors.border }]}
+            placeholder="Buscar cliente..."
+            placeholderTextColor={colors.textSecondary}
+            value={search}
+            onChangeText={setSearch}
+          />
+        </View>
+
+        <FlatList
+          data={filteredClients}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
+          contentContainerStyle={styles.list}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.success} />
+          }
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyEmoji}>👥</Text>
+              <Text style={styles.emptyText}>No se encontraron clientes</Text>
+            </View>
+          }
         />
-      </View>
-
-      <FlatList
-        data={filteredClients}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={renderItem}
-        contentContainerStyle={styles.list}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.success} />
-        }
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyEmoji}>👥</Text>
-            <Text style={styles.emptyText}>No se encontraron clientes</Text>
-          </View>
-        }
-      />
-    </SafeAreaView>
+      </SafeAreaView>
+    </BackgroundWrapper>
   );
 }
 
