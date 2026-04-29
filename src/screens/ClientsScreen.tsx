@@ -79,8 +79,9 @@ export default function ClientsScreen() {
   };
 
   const renderItem = ({ item }: { item: Cliente }) => (
-    <View 
+    <TouchableOpacity 
       style={[styles.card, { backgroundColor: colors.bgDark, borderColor: colors.border }]}
+      onPress={() => navigation.navigate("ClientDetail", { clientId: item.id })}
     >
       <View style={styles.cardMain}>
         <View style={[styles.avatar, { backgroundColor: colors.primary + "20" }]}>
@@ -124,7 +125,7 @@ export default function ClientsScreen() {
           )}
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   if (loading && !refreshing) {

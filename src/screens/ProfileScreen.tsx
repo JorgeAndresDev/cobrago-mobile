@@ -16,10 +16,12 @@ import { useNavigation } from "@react-navigation/native";
 import BackgroundWrapper from "../components/BackgroundWrapper";
 import { createProfileStyles } from "../styles/profile.styles";
 import Toast from "react-native-toast-message";
+import { useNetwork } from "../hooks/useNetwork";
 
 export default function ProfileScreen() {
   const { user, logout } = useContext(AuthContext);
   const { theme, toggleTheme, colors } = useTheme();
+  const { isConnected } = useNetwork();
   const styles = createProfileStyles(colors);
   const navigation = useNavigation<any>();
 
@@ -63,9 +65,11 @@ export default function ProfileScreen() {
               <Text style={styles.avatarText}>{user?.username?.substring(0, 1).toUpperCase()}</Text>
             </View>
             <Text style={styles.userName}>{user?.username}</Text>
-            <View style={styles.statusBadge}>
-              <View style={[styles.statusDot, { backgroundColor: colors.success }]} />
-              <Text style={[styles.statusText, { color: colors.success }]}>Conectado</Text>
+            <View style={[styles.statusBadge, { backgroundColor: isConnected ? "rgba(74, 222, 128, 0.1)" : "rgba(255, 77, 77, 0.1)" }]}>
+              <View style={[styles.statusDot, { backgroundColor: isConnected ? colors.success : "#ff4d4d" }]} />
+              <Text style={[styles.statusText, { color: isConnected ? colors.success : "#ff4d4d" }]}>
+                {isConnected ? "Conectado" : "Sin conexión"}
+              </Text>
             </View>
           </View>
 

@@ -1,8 +1,10 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_CONFIG } from "../utils/constants";
 
 const api = axios.create({
-  baseURL: "https://constructionally-nonsubmersible-rossie.ngrok-free.dev",
+  baseURL: API_CONFIG.BASE_URL,
+  timeout: API_CONFIG.TIMEOUT,
 });
 
 let isRefreshing = false;
