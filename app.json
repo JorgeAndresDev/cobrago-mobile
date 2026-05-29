@@ -22,7 +22,6 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#072a1e"
       },
-      "edgeToEdgeEnabled": true,
       "permissions": [
         "INTERNET",
         "ACCESS_NETWORK_STATE"
@@ -36,6 +35,20 @@
         "projectId": "ddc47356-3787-49f8-af63-6582e8130fc1"
       }
     },
-    "owner": "jotadev07"
+    "owner": "jotadev07",
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 33,
+            "targetSdkVersion": 33,
+            "buildToolsVersion": "33.0.2",
+            "kotlinVersion": "1.8.22"
+          }
+        }
+      ],
+      "expo-status-bar"
+    ]
   }
 }
