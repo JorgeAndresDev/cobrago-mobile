@@ -57,9 +57,6 @@ export const createProfileStyles = (colors: any) => StyleSheet.create({
     padding: 16,
     borderWidth: 1,
   },
-  infoRow: {
-    marginBottom: 15,
-  },
   infoRowLast: {
     marginBottom: 0,
   },
@@ -144,14 +141,27 @@ export const createProfileStyles = (colors: any) => StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  footerLogo: {
-    marginTop: 30,
+  infoRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    opacity: 0.6,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(0,0,0,0.05)",
   },
-  versionText: {
-    fontSize: 12,
-    marginTop: 8,
-    fontWeight: "600",
+  avatarImg: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 45,
+  },
+  syncBtn: {
+    padding: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  syncBtnText: {
+    fontWeight: 'bold',
+    fontSize: 14,
   }
 });

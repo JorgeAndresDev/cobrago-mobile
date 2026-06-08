@@ -4,11 +4,11 @@
     "slug": "cobrago-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/logo-cobrago.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": false,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/logo-cobrago.png",
       "resizeMode": "contain",
       "backgroundColor": "#072a1e"
     },
@@ -19,12 +19,17 @@
     "android": {
       "package": "com.jorgeandres.cobrago",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/logo-cobrago.png",
         "backgroundColor": "#072a1e"
       },
       "permissions": [
         "INTERNET",
-        "ACCESS_NETWORK_STATE"
+        "ACCESS_NETWORK_STATE",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
       ]
     },
     "web": {
@@ -37,18 +42,21 @@
     },
     "owner": "jotadev07",
     "plugins": [
+      "expo-status-bar",
+      "expo-sqlite",
       [
-        "expo-build-properties",
+        "expo-location",
         {
-          "android": {
-            "compileSdkVersion": 33,
-            "targetSdkVersion": 33,
-            "buildToolsVersion": "33.0.2",
-            "kotlinVersion": "1.8.22"
-          }
+          "locationAlwaysAndWhenInUsePermission": "CobraGo necesita acceso a tu ubicación para registrar la geolocalización de clientes."
         }
       ],
-      "expo-status-bar"
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "CobraGo necesita acceso a tu galería para agregar fotos de tus clientes.",
+          "cameraPermission": "CobraGo necesita acceso a tu cámara para tomar fotos de tus clientes."
+        }
+      ]
     ]
   }
 }

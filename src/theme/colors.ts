@@ -2,7 +2,8 @@ export const lightColors = {
   // Emerald & Light Palette
   primary: "#125540",
   secondary: "#ffffff",
-  accent: "#f59e0b",
+  accent: "#ef4444",
+  warning: "#f59e0b",
   success: "#15803d", // Un verde un poco más oscuro para modo claro
   
   // Backgrounds
@@ -23,7 +24,8 @@ export const darkColors = {
   // Emerald & Dark Slate Palette
   primary: "#125540",
   secondary: "#072a1e",
-  accent: "#f59e0b",
+  accent: "#ef4444",
+  warning: "#f59e0b",
   success: "#4ade80",
   
   // Backgrounds

@@ -1,50 +1,52 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { View, Text, Platform } from "react-native";
+import { Platform } from "react-native";
 import DashboardScreen from "../screens/DashboardScreen";
 import ClientsScreen from "../screens/ClientsScreen";
 import CreatePaymentScreen from "../screens/CreatePaymentScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import { useTheme } from "../context/ThemeContext";
+import { Ionicons } from "@expo/vector-icons";
+
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Tab = createBottomTabNavigator();
 
-// Placeholder for icons if vector-icons is not ready, otherwise use emojis
-const TabIcon = ({ name, focused }: { name: string; focused: boolean }) => {
-  const icons: Record<string, string> = {
-    Inicio: "🏠",
-    Clientes: "👥",
-    Pagar: "💰",
-    Perfil: "👤",
-  };
-  return (
-    <View style={{ alignItems: "center", justifyContent: "center" }}>
-      <Text style={{ fontSize: 20, opacity: focused ? 1 : 0.5 }}>{icons[name]}</Text>
-    </View>
-  );
+const tabIcons: Record<string, { active: string; inactive: string }> = {
+  Inicio:   { active: "grid",            inactive: "grid-outline" },
+  Clientes: { active: "people",          inactive: "people-outline" },
+  Pagar:    { active: "cash",            inactive: "cash-outline" },
+  Perfil:   { active: "person-circle",   inactive: "person-circle-outline" },
 };
 
 export default function TabNavigator() {
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused }) => <TabIcon name={route.name} focused={focused} />,
+        tabBarIcon: ({ color, size, focused }) => {
+          const icon = tabIcons[route.name];
+          const iconName = (focused ? icon?.active : icon?.inactive) ?? "ellipse-outline";
+          return <Ionicons name={iconName as any} size={size} color={color} />;
+        },
         tabBarStyle: {
           backgroundColor: colors.bgDark,
           borderTopWidth: 1,
           borderTopColor: colors.border,
-          minHeight: Platform.OS === 'ios' ? 85 : 70,
-          paddingBottom: Platform.OS === 'ios' ? 25 : 10,
+          // Altura dinámica: base 60 + el inset inferior del sistema
+          height: 60 + insets.bottom,
+          paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
           paddingTop: 10,
         },
         tabBarActiveTintColor: colors.success,
         tabBarInactiveTintColor: colors.textSecondary,
         headerShown: false,
         tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: "600",
+          fontSize: 11,
+          fontWeight: "700",
+          marginBottom: insets.bottom > 0 ? 0 : 5
         },
       })}
     >

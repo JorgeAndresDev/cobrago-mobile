@@ -2,7 +2,11 @@ export interface User {
   id: number;
   username: string;
   email: string;
+  photo_url?: string;
+  phone?: string;
 }
+
+export type RiskLevel = "Bajo" | "Medio" | "Alto";
 
 export interface Cliente {
   id: number;
@@ -11,6 +15,13 @@ export interface Cliente {
   telefono?: string;
   direccion?: string;
   usuario_id: number;
+  latitud?: number;
+  longitud?: number;
+  observaciones?: string;
+  nivel_riesgo?: RiskLevel;
+  foto_url?: string;
+  foto_local_path?: string;
+  is_synced?: number; // 0 = pendiente, 1 = sincronizado
 }
 
 export interface Prestamo {
@@ -36,4 +47,13 @@ export interface Cuota {
 export interface AuthResponse {
   access_token: string;
   token_type: string;
+}
+
+export interface DashboardStats {
+  recaudado_hoy: number;
+  cartera_activa: number;
+  total_clientes: number;
+  prestamos_activos: number;
+  clientes_mora: number;
+  cobros_hoy: number;
 }

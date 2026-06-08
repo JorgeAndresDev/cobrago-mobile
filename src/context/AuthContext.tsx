@@ -44,15 +44,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const storedToken = await AsyncStorage.getItem("token");
         
         if (storedToken) {
-          // Intentar obtener perfil del usuario para validar token
-          // Asumimos el endpoint /auth/me basado en el estándar FastAPI
+          setToken(storedToken); 
           const response = await api.get("/auth/me");
-          setToken(storedToken);
           setUser(response.data);
         }
       } catch (error: any) {
         console.warn("Sesión inválida al inicio:", error.response?.status);
-        await logout();
+        if (error.response?.status === 401) {
+          await logout();
+        }
       } finally {
         setLoading(false);
       }

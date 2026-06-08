@@ -183,5 +183,62 @@ export const createDashboardStyles = (colors: any) => StyleSheet.create({
   },
   emptyText: {
     color: colors.textSecondary,
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  metricsGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginBottom: 30,
+  },
+  metricCard: {
+    width: (width - 60) / 2,
+    backgroundColor: colors.bgDark,
+    padding: 16,
+    borderRadius: 20,
+    marginBottom: 12,
+    borderWidth: 1,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  metricIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 10,
+  },
+  metricIconText: {
+    fontSize: 18,
+  },
+  metricLabel: {
+    fontSize: 11,
+    color: colors.textSecondary,
+    fontWeight: "600",
+  },
+  metricValue: {
+    fontSize: 15,
+    fontWeight: "bold",
+    color: colors.textPrimary,
+  },
+  activitySubtitle: {
+    fontSize: 12,
+    color: colors.textSecondary,
+  },
+  emptyIconBox: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: colors.bgDark,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  emptyIcon: {
+    fontSize: 30,
   }
 });

@@ -16,7 +16,7 @@ import { StatusBar } from "expo-status-bar";
 import { useTheme } from "../context/ThemeContext";
 import BackgroundWrapper from "../components/BackgroundWrapper";
 import { createLoginStyles } from "../styles/login.styles";
-import { Ionicons } from "@expo/vector-icons";
+import { Icon } from "../components/Icon";
 
 export default function LoginScreen() {
   const { login } = useContext(AuthContext);
@@ -127,8 +127,8 @@ export default function LoginScreen() {
                     onPress={() => setShowPassword((prev) => !prev)}
                     activeOpacity={0.7}
                   >
-                    <Ionicons
-                      name={showPassword ? "eye-off-outline" : "eye-outline"}
+                    <Icon
+                      name={showPassword ? "eye" : "eye-off"}
                       size={22}
                       color="#94a3b8"
                     />

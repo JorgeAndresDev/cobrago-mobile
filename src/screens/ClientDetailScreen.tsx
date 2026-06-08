@@ -4,18 +4,24 @@ import {
   Text, 
   ScrollView, 
   TouchableOpacity, 
-  SafeAreaView, 
   ActivityIndicator, 
   Linking, 
   Platform,
-  RefreshControl
+  RefreshControl,
+  Image,
+  Alert,
+  StyleSheet
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useRoute, useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useTheme } from "../context/ThemeContext";
 import { clientService } from "../services/clientService";
 import BackgroundWrapper from "../components/BackgroundWrapper";
 import { createClientDetailStyles } from "../styles/clientDetail.styles";
 import { createCommonStyles } from "../styles/common.styles";
+import { Icon } from "../components/Icon";
+import { ConfirmModal } from "../components/ConfirmModal";
+import Toast from "react-native-toast-message";
 
 export default function ClientDetailScreen() {
   const route = useRoute<any>();
@@ -28,6 +34,7 @@ export default function ClientDetailScreen() {
   const [client, setClient] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const fetchDetail = async () => {
     try {
@@ -47,17 +54,72 @@ export default function ClientDetailScreen() {
     }, [clientId])
   );
 
+  const handleDelete = async () => {
+    try {
+      setLoading(true);
+      await clientService.deleteClient(clientId);
+      setShowDeleteModal(false);
+      
+      Toast.show({ 
+        type: 'success', 
+        text1: '¡Cliente Eliminado!', 
+        text2: 'El registro ha sido borrado exitosamente del sistema.' 
+      });
+      
+      navigation.navigate("Clientes");
+    } catch (error: any) {
+      console.error("Delete Error:", error);
+      setShowDeleteModal(false);
+      
+      const errorMsg = error.response?.data?.detail || "No se pudo eliminar al cliente por un problema técnico.";
+      
+      Toast.show({ 
+        type: 'error', 
+        text1: 'Error al Eliminar', 
+        text2: errorMsg 
+      });
+      setLoading(false);
+    }
+  };
+
   const onRefresh = () => {
     setRefreshing(true);
     fetchDetail();
   };
 
-  const openMap = (direccion: string) => {
-    const url = Platform.select({
-      ios: `maps:0,0?q=${encodeURIComponent(direccion)}`,
-      android: `geo:0,0?q=${encodeURIComponent(direccion)}`,
-    }) || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion)}`;
-    Linking.openURL(url);
+  const openMap = (type: 'google' | 'waze') => {
+    const lat = client?.latitud;
+    const lng = client?.longitud;
+    const address = client?.direccion;
+
+    if (type === 'google') {
+      const url = lat && lng 
+        ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
+        : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+      Linking.openURL(url);
+    } else {
+      const url = lat && lng
+        ? `waze://?ll=${lat},${lng}&navigate=yes`
+        : `waze://?q=${encodeURIComponent(address)}&navigate=yes`;
+        
+      Linking.canOpenURL(url).then(supported => {
+        if (supported) {
+          Linking.openURL(url);
+        } else {
+          Alert.alert("Waze no instalado", "Parece que no tienes Waze instalado en tu dispositivo.");
+        }
+      });
+    }
+  };
+
+  const RiskBadge = ({ level }: { level: string }) => {
+    const color = level === 'Bajo' ? colors.success : level === 'Medio' ? colors.warning : colors.accent;
+    return (
+      <View style={[styles.riskBadge, { backgroundColor: color + '20' }]}>
+        <View style={[styles.riskDot, { backgroundColor: color }]} />
+        <Text style={[styles.riskText, { color }]}>{level}</Text>
+      </View>
+    );
   };
 
   if (loading && !refreshing) {
@@ -79,18 +141,33 @@ export default function ClientDetailScreen() {
         >
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity 
-              style={[commonStyles.backButton, { alignSelf: 'flex-start' }]} 
-              onPress={() => navigation.goBack()}
-            >
-              <Text style={commonStyles.backButtonText}>‹ Volver</Text>
-            </TouchableOpacity>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                <TouchableOpacity 
+                  style={[commonStyles.backButton, { alignSelf: 'flex-start' }]} 
+                  onPress={() => navigation.goBack()}
+                >
+                  <Text style={commonStyles.backButtonText}>‹ Volver</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity 
+                  style={{ padding: 8 }}
+                  onPress={() => navigation.navigate("CreateClient", { client })}
+                >
+                  <Icon name="pencil" size={24} color={colors.success} />
+                </TouchableOpacity>
+            </View>
 
             <View style={styles.avatarLarge}>
-              <Text style={styles.avatarText}>{client?.nombre?.charAt(0).toUpperCase()}</Text>
+              {(client?.foto_url || client?.foto_local_path) ? (
+                <Image source={{ uri: client.foto_url || client.foto_local_path }} style={styles.clientPhoto} />
+              ) : (
+                <Text style={styles.avatarText}>{client?.nombre?.charAt(0).toUpperCase()}</Text>
+              )}
             </View>
             <Text style={styles.clientName}>{client?.nombre}</Text>
             <Text style={styles.clientId}>Cédula: {client?.cedula}</Text>
+            
+            <RiskBadge level={client?.nivel_riesgo || 'Bajo'} />
 
             <View style={styles.statsRow}>
               <View style={styles.statItem}>
@@ -105,7 +182,7 @@ export default function ClientDetailScreen() {
           </View>
 
           <View style={styles.content}>
-            {/* Contacto */}
+            {/* Ubicación y Contacto */}
             <Text style={styles.sectionTitle}>📍 Ubicación y Contacto</Text>
             <View style={[styles.contactCard, { backgroundColor: colors.bgDark, borderColor: colors.border }]}>
               <TouchableOpacity 
@@ -116,13 +193,28 @@ export default function ClientDetailScreen() {
                 <Text style={styles.contactText}>{client?.telefono || "Sin teléfono"}</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity 
-                style={styles.contactRowLast}
-                onPress={() => openMap(client?.direccion)}
-              >
+              <View style={styles.contactRowLast}>
                 <Text style={styles.contactIcon}>🏠</Text>
-                <Text style={styles.contactText}>{client?.direccion || "Sin dirección"}</Text>
-              </TouchableOpacity>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.contactText}>{client?.direccion || "Sin dirección"}</Text>
+                  <View style={styles.mapActions}>
+                    <TouchableOpacity style={[styles.mapBtn, { backgroundColor: colors.primary + '20' }]} onPress={() => openMap('google')}>
+                      <Text style={[styles.mapBtnText, { color: colors.primary }]}>Google Maps</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.mapBtn, { backgroundColor: colors.success + '20' }]} onPress={() => openMap('waze')}>
+                      <Text style={[styles.mapBtnText, { color: colors.success }]}>Waze</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            {/* Observaciones */}
+            <Text style={styles.sectionTitle}>📝 Observaciones</Text>
+            <View style={[styles.card, { backgroundColor: colors.bgDark, borderColor: colors.border }]}>
+              <Text style={{ color: client?.observaciones ? colors.textPrimary : colors.textSecondary }}>
+                {client?.observaciones || "No hay observaciones para este cliente."}
+              </Text>
             </View>
 
             {/* Préstamos */}
@@ -135,7 +227,7 @@ export default function ClientDetailScreen() {
               >
                 <View style={styles.loanInfo}>
                   <Text style={styles.loanDate}>{new Date(loan.fecha_creacion).toLocaleDateString()}</Text>
-                  <Text style={styles.loanAmount}>${loan.monto_prestado.toLocaleString()}</Text>
+                  <Text style={styles.loanAmount}>${(loan.monto_prestado || loan.monto).toLocaleString()}</Text>
                 </View>
                 <View style={[styles.loanStatus, { backgroundColor: colors.success + "20" }]}>
                   <Text style={[styles.loanStatusText, { color: colors.success }]}>Pendiente</Text>
@@ -146,6 +238,13 @@ export default function ClientDetailScreen() {
                 <Text style={styles.emptyText}>No hay préstamos registrados</Text>
               </View>
             )}
+
+            <TouchableOpacity 
+              style={extraStyles.deleteBtn}
+              onPress={() => setShowDeleteModal(true)}
+            >
+              <Text style={extraStyles.deleteBtnText}>🗑️ Eliminar Cliente</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
 
@@ -165,7 +264,36 @@ export default function ClientDetailScreen() {
             <Text style={styles.actionBtnText}>Registrar Cobro</Text>
           </TouchableOpacity>
         </View>
+
+        <ConfirmModal 
+          visible={showDeleteModal}
+          title="Eliminar Cliente"
+          message="¿Estás seguro de que quieres eliminar a este cliente? Esta acción no se puede deshacer y borrará todos sus préstamos."
+          confirmText="Eliminar"
+          type="danger"
+          onConfirm={handleDelete}
+          onCancel={() => setShowDeleteModal(false)}
+        />
       </SafeAreaView>
     </BackgroundWrapper>
   );
 }
+
+const extraStyles = StyleSheet.create({
+  deleteBtn: {
+    marginTop: 40,
+    marginBottom: 40,
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#ff444430',
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  deleteBtnText: {
+    color: '#ff4444',
+    fontWeight: 'bold',
+    fontSize: 15,
+  }
+});

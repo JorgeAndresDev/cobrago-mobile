@@ -6,6 +6,9 @@ export const createClientDetailStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
   },
+  scrollContent: {
+    paddingBottom: 40,
+  },
   header: {
     paddingHorizontal: 24,
     paddingTop: 40,
@@ -154,5 +157,48 @@ export const createClientDetailStyles = (colors: any) => StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 15,
+  },
+  clientPhoto: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 24,
+  },
+  mapActions: {
+    flexDirection: 'row',
+    marginTop: 10,
+  },
+  mapBtn: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    marginRight: 10,
+  },
+  mapBtnText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  card: {
+    borderRadius: 20,
+    padding: 16,
+    borderWidth: 1,
+    marginBottom: 25,
+  },
+  riskBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+    marginTop: 10,
+  },
+  riskDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 6,
+  },
+  riskText: {
+    fontSize: 12,
+    fontWeight: 'bold',
   }
 });
