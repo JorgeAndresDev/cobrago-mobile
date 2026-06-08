@@ -4,6 +4,7 @@ import { queueService } from "./queueService";
 import { clientService } from "./clientService";
 import { loanService } from "./loanService";
 import { paymentService } from "./paymentService";
+import api from "../api/axios";
 
 export const syncService = {
   syncAll: async () => {
@@ -30,7 +31,7 @@ export const syncService = {
       await db.runAsync(
         `INSERT OR REPLACE INTO clientes (id, nombre, cedula, telefono, direccion, usuario_id, latitud, longitud, observaciones, nivel_riesgo, foto_url, is_synced) 
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`,
-        [client.id, client.nombre, client.cedula, client.telefono || '', client.direccion || '', client.usuario_id, client.latitud || null, client.longitud || null, client.observaciones || '', client.nivel_riesgo || 'Bajo', client.foto_url || null]
+        [client.cedula.toString(), client.nombre, client.cedula.toString(), client.telefono || '', client.direccion || '', client.usuario_id, client.latitud || null, client.longitud || null, client.observaciones || '', client.nivel_riesgo || 'Bajo', client.foto_url || null]
       );
     }
 
@@ -51,8 +52,19 @@ export const syncService = {
     for (const item of queue) {
       const data = JSON.parse(item.data);
       try {
-        if (item.type === 'CLIENT' && item.action === 'CREATE') {
-          await clientService.createClient(data);
+        if (item.type === 'CLIENT') {
+          if (item.action === 'CREATE') {
+            await clientService.createClient(data);
+          } else if (item.action === 'UPDATE') {
+            await clientService.updateClient(data.id, data);
+          } else if (item.action === 'DELETE') {
+            try {
+              await api.delete(`/clientes/${data.id}`);
+            } catch (err: any) {
+              // Si ya no existe en el servidor (404), lo damos por procesado con éxito
+              if (err.response?.status !== 404) throw err;
+            }
+          }
         } else if (item.type === 'LOAN' && item.action === 'CREATE') {
           await loanService.createLoanForClient(data.cliente_id, data);
         } else if (item.type === 'PAYMENT' && item.action === 'CREATE') {

@@ -1,0 +1,55 @@
+COBRAGO - ESPECIFICACIONES TÉCNICAS Y RESUMEN EJECUTIVO
+===================================================
+Documentación de Arquitectura e Infraestructura v1.2
+
+1. RESUMEN DEL SISTEMA
+----------------------
+CobraGo es un ecosistema financiero compuesto por una aplicación móvil multiplataforma y una API RESTful escalable. El sistema está diseñado para operar en condiciones de baja o nula conectividad sin comprometer la integridad de la información.
+
+2. STACK TECNOLÓGICO (DEVELOPMENT STACK)
+---------------------------------------
+- FRONTEND MÓVIL: React Native + Expo (SDK 51+).
+- BACKEND API: FastAPI (Python 3.10+) - Arquitectura asíncrona.
+- PERSISTENCIA LOCAL: SQLite 3 con Expo-SQLite (Next).
+- PERSISTENCIA CENTRAL: PostgreSQL (Supabase / Managed Services).
+- COMUNICACIÓN: Axios con interceptores para gestión de JWT dinámico.
+- ESTILOS: Custom Design System "Deep Jungle" basado en Glassmorphism.
+
+3. ARQUITECTURA DE DATOS E INTEGRIDAD
+-------------------------------------
+El corazón de CobraGo es su esquema relacional optimizado:
+
+A. MODELO DE IDENTIDAD (CLIENTES):
+   - Primary Key: Cédula de Ciudadanía (String).
+   - Unificamos la identidad en el móvil y servidor para permitir "Optimistic Deletes".
+   - Almacenamiento de metadatos: Geolocalización (Lat/Lng), niveles de riesgo y auditoría de usuario.
+
+B. MOTOR DE PRÉSTAMOS (LOANS):
+   - Generación dinámica de cuotas mediante lógica de servicios en el Backend.
+   - Soporte para amortizaciones diarias, semanales, quincenales y mensuales.
+   - Estado de crédito: seguimiento en tiempo real (pendiente, pagado, mora).
+
+4. PROTOCOLO DE SINCRONIZACIÓN (SYNC ENGINE)
+--------------------------------------------
+Implementamos un sistema de conciliación de tres fases:
+1. CAPTURA: Las acciones del usuario (POST/PUT/DELETE) se guardan en una cola (sync_queue) en SQLite.
+2. CONCILIACIÓN: Al recuperar conexión, el Sync Engine procesa la cola de forma secuencial.
+3. RECONCILIACIÓN: El servidor valida los IDs y Cédulas, resolviendo conflictos basándose en la última actualización real (Timestamp/LWW).
+
+5. SEGURIDAD Y DESPLIEGUE
+-------------------------
+- AUTENTICACIÓN: OAuth2 con tokens JWT (JSON Web Tokens).
+- DEPLOYMENT BACKEND: Infraestructura en Render con despliegue continuo (CI/CD).
+- DEPLOYMENT MÓVIL: EAS Build para generación de APKs de distribución interna.
+- GESTIÓN DE AMBIENTES: Variables de entorno (.env) para protección de secretos y endpoints.
+
+6. COMPONENTES DE INTERFAZ (UI/UX)
+----------------------------------
+- THEME ENGINE: Context API de React para cambios de modo oscuro/claro en tiempo real.
+- ALERTAS: Sistema Toast avanzado reactivo al tema con retroalimentación háptica visual.
+- LAYOUT: BackgroundWrapper dinámico con soporte para gradientes complejos y Safe Area Insets.
+
+-----------------------------------------------------------
+Documento Técnico - JorgeAndresDev
+Generado el 08 de Junio de 2026.
+-----------------------------------------------------------
